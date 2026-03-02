@@ -1,53 +1,72 @@
-// Variables y constantes
-const productos = ["Camiseta", "Pantalón", "Zapatillas"];
-const precios = [5000, 8000, 12000];
-let carrito = [];
+// Array de objetos producto
+const productos = [
+  { nombre: "Camiseta", precio: 5000 },
+  { nombre: "Pantalón", precio: 8000 },
+  { nombre: "Zapatillas", precio: 12000 }
+];
 
-// Función 1: mostrar productos disponibles
-function mostrarProductos() {
-  let lista = "Productos disponibles:\n";
-  for (let i = 0; i < productos.length; i++) {
-    lista += `${i + 1}. ${productos[i]} - $${precios[i]}\n`;
-  }
-  alert(lista); // ahora se muestra al inicio en un cuadro de diálogo
-  console.log(lista); // también en la consola
+let carrito = JSON.parse(localStorage.getItem("carrito")) || [];
+
+// Función 1: mostrar productos en el DOM
+function mostrarProductos(lista) {
+  const contenedor = document.getElementById("productos");
+  contenedor.innerHTML = "";
+  lista.forEach((producto, index) => {
+    const div = document.createElement("div");
+    div.className = "producto";
+    div.innerHTML = `
+      <h3>${producto.nombre}</h3>
+      <p>Precio: $${producto.precio}</p>
+      <input type="number" id="cantidad-${index}" min="1" value="1">
+      <button onclick="agregarProducto(${index})">Agregar</button>
+    `;
+    contenedor.appendChild(div);
+  });
 }
 
-// Función 2: agregar producto al carrito
-function agregarProducto() {
-  let opcion = parseInt(prompt("Ingrese el número del producto que desea comprar:"));
-  if (opcion >= 1 && opcion <= productos.length) {
-    carrito.push(precios[opcion - 1]);
-    alert(`Agregaste ${productos[opcion - 1]} al carrito.`);
-  } else {
-    alert("Opción inválida. Intente nuevamente.");
+// Función 2: agregar producto al carrito con cantidad
+function agregarProducto(indice) {
+  const cantidad = parseInt(document.getElementById(`cantidad-${indice}`).value);
+  if (cantidad > 0) {
+    for (let i = 0; i < cantidad; i++) {
+      carrito.push(productos[indice]);
+    }
+    actualizarCarrito();
   }
 }
 
-// Función 3: calcular total de la compra
-function calcularTotal() {
-  let total = 0;
-  for (let precio of carrito) {
-    total += precio;
-  }
-  return total;
+// Función 3: mostrar carrito en el DOM
+function actualizarCarrito() {
+  const lista = document.getElementById("carrito");
+  lista.innerHTML = "";
+  carrito.forEach((producto) => {
+    const li = document.createElement("li");
+    li.textContent = `${producto.nombre} - $${producto.precio}`;
+    lista.appendChild(li);
+  });
+
+  const total = calcularTotal(carrito);
+  document.getElementById("total").textContent = total;
+
+  // Guardar en localStorage
+  localStorage.setItem("carrito", JSON.stringify(carrito));
 }
 
-// Flujo principal del simulador
-function iniciarSimulador() {
-  alert("Bienvenido al simulador de compras.");
-  mostrarProductos(); // se muestran las opciones al inicio
-  let continuar = true;
-
-  while (continuar) {
-    agregarProducto();
-    continuar = confirm("¿Desea agregar otro producto?");
-  }
-
-  let totalCompra = calcularTotal();
-  alert(`El total de su compra es: $${totalCompra}`);
-  console.log("Carrito final:", carrito);
+// Función 4: calcular total
+function calcularTotal(listaCarrito) {
+  return listaCarrito.reduce((acc, producto) => acc + producto.precio, 0);
 }
 
-// Invocar simulador
-iniciarSimulador();
+// Función 5: vaciar carrito
+function vaciarCarrito() {
+  carrito = [];
+  actualizarCarrito();
+  localStorage.removeItem("carrito");
+}
+
+// Eventos
+document.getElementById("vaciar").addEventListener("click", vaciarCarrito);
+
+// Inicialización
+mostrarProductos(productos);
+actualizarCarrito();

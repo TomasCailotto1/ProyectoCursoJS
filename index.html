@@ -3,14 +3,24 @@
 <head>
   <meta charset="UTF-8">
   <title>Simulador de Compras</title>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <h1>Simulador de Compras</h1>
   <p>
-    Este simulador permite al usuario elegir productos de una tienda virtual, 
-    calcular el total de la compra y confirmar si desea finalizarla. 
-    Toda la interacción se realiza mediante la consola y cuadros de diálogo.
+    Este simulador permite al usuario elegir productos de una tienda virtual,
+    agregarlos a un carrito y calcular el total de la compra. Toda la interacción
+    se realiza mediante el DOM y eventos, sin uso de alert ni prompt.
   </p>
+
+  <!-- Lista de productos -->
+  <div id="productos"></div>
+
+  <!-- Carrito -->
+  <h2>Carrito de Compras</h2>
+  <ul id="carrito"></ul>
+  <p>Total: $<span id="total">0</span></p>
+  <button id="vaciar">Vaciar Carrito</button>
 
   <script src="js/script.js"></script>
 </body>
